@@ -14,7 +14,7 @@ class Client(object):
         self.use_server_time = use_server_time
         self.first = first
 
-    def _request(self, method, request_path, params, cursor=False):
+    def _request(self, method, request_path, params, timeout: int | None, cursor=False):
         if method == c.GET:
             request_path = request_path + utils.parse_params_to_str(params)
         # url
@@ -48,14 +48,14 @@ class Client(object):
         # send request
         response = None
         if method == c.GET:
-            response = requests.get(url, headers=header)
+            response = requests.get(url, headers=header, timeout=timeout)
             logging.debug("response : %s", response.text)
         elif method == c.POST:
-            response = requests.post(url, data=body, headers=header)
+            response = requests.post(url, data=body, headers=header, timeout=timeout)
             logging.debug("response : %s", response.text)
             #response = requests.post(url, json=body, headers=header)
         elif method == c.DELETE:
-            response = requests.delete(url, headers=header)
+            response = requests.delete(url, headers=header, timeout=timeout)
 
         logging.debug("status: %s", response.status_code)
         # exception handle
@@ -77,11 +77,11 @@ class Client(object):
         except ValueError:
             raise exceptions.BitgetRequestException('Invalid Response: %s' % response.text)
 
-    def _request_without_params(self, method, request_path):
-        return self._request(method, request_path, {})
+    def _request_without_params(self, method, request_path, timeout: int | None):
+        return self._request(method, request_path, {}, timeout)
 
-    def _request_with_params(self, method, request_path, params, cursor=False):
-        return self._request(method, request_path, params, cursor)
+    def _request_with_params(self, method, request_path, params, timeout: int | None, cursor=False):
+        return self._request(method, request_path, params, timeout, cursor)
 
     def _get_timestamp(self):
         url = c.API_URL + c.SERVER_TIMESTAMP_URL
