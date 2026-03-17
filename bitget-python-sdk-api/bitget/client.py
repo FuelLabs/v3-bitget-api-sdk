@@ -2,6 +2,7 @@ import logging
 import requests
 import json
 from . import consts as c, utils, exceptions
+from typing import Optional
 
 
 class Client(object):
@@ -14,7 +15,7 @@ class Client(object):
         self.use_server_time = use_server_time
         self.first = first
 
-    def _request(self, method, request_path, params, timeout: float | None = 30, cursor=False):
+    def _request(self, method, request_path, params, timeout: Optional[float] = 30, cursor=False):
         if method == c.GET:
             request_path = request_path + utils.parse_params_to_str(params)
         # url
@@ -77,10 +78,10 @@ class Client(object):
         except ValueError:
             raise exceptions.BitgetRequestException('Invalid Response: %s' % response.text)
 
-    def _request_without_params(self, method, request_path, timeout: float | None = 30):
+    def _request_without_params(self, method, request_path, timeout: Optional[float] = 30):
         return self._request(method, request_path, {}, timeout)
 
-    def _request_with_params(self, method, request_path, params, timeout: float | None = 30, cursor=False):
+    def _request_with_params(self, method, request_path, params, timeout: Optional[float] = 30, cursor=False):
         return self._request(method, request_path, params, timeout, cursor)
 
     def _get_timestamp(self):
