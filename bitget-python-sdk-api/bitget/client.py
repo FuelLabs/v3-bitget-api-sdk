@@ -14,7 +14,7 @@ class Client(object):
         self.use_server_time = use_server_time
         self.first = first
 
-    def _request(self, method, request_path, params, timeout: int | None, cursor=False):
+    def _request(self, method, request_path, params, timeout: int | None = None, cursor=False):
         if method == c.GET:
             request_path = request_path + utils.parse_params_to_str(params)
         # url
@@ -77,10 +77,10 @@ class Client(object):
         except ValueError:
             raise exceptions.BitgetRequestException('Invalid Response: %s' % response.text)
 
-    def _request_without_params(self, method, request_path, timeout: int | None):
+    def _request_without_params(self, method, request_path, timeout: int | None = None):
         return self._request(method, request_path, {}, timeout)
 
-    def _request_with_params(self, method, request_path, params, timeout: int | None, cursor=False):
+    def _request_with_params(self, method, request_path, params, timeout: int | None = None, cursor=False):
         return self._request(method, request_path, params, timeout, cursor)
 
     def _get_timestamp(self):
