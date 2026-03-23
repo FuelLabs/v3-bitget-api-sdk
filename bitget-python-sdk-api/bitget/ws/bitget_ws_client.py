@@ -218,7 +218,11 @@ class BitgetWsClient:
             instId = dict['instId']
         else:
             instId = dict['coin']
-        return SubscribeReq(dict['instType'], dict['channel'], instId)
+        
+        if "channel" in dict:
+            return SubscribeReq(dict['instType'], dict['channel'], instId)
+        else:
+            return SubscribeReqUta(dict['instType'], dict['topic'], instId)
 
     def get_listener(self, json_obj):
         try:
@@ -372,6 +376,19 @@ class SubscribeReq:
 
     def __hash__(self) -> int:
         return hash(self.inst_type + self.channel + self.inst_id)
+
+
+class SubscribeReqUta:
+
+    def __init__(self, inst_type, topic, instId):
+        self.inst_type = inst_type
+        self.topic = topic
+
+    def __eq__(self, other) -> bool:
+        return self.__dict__ == other.__dict__
+
+    def __hash__(self) -> int:
+        return hash(self.inst_type + self.topic)
 
 
 class BaseWsReq:
