@@ -18,6 +18,10 @@ def set_paptrading(value: str):
     paptrading = value
     contract_ws_url = 'wss://ws.bitget.com/v2/ws/private' if value != '1' else 'wss://wspap.bitget.com/v2/ws/private'
 
+def set_uta():
+    global contract_ws_url
+    contract_ws_url = contract_ws_url.replace('v2', 'v3')
+
 def sign(message, secret_key):
     mac = hmac.new(bytes(secret_key, encoding='utf8'), bytes(message, encoding='utf-8'), digestmod='sha256')
     d = mac.digest()
