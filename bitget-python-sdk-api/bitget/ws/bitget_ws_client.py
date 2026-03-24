@@ -283,7 +283,9 @@ class BitgetWsClient:
 
             subscribe_req = json.loads(arg, object_hook=self.__dict_to_subscribe_req)
 
-            if subscribe_req.channel != "books":
+            if "channel" in arg and subscribe_req.channel != "books":
+                return True
+            elif "topic" in arg and subscribe_req.topic != "books":
                 return True
 
             books_info = json.loads(data, object_hook=self.__dict_books_info)[0]
