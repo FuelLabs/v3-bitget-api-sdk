@@ -214,11 +214,14 @@ class BitgetWsClient:
         return BooksInfo(dict['asks'], dict['bids'], dict['checksum'])
 
     def __dict_to_subscribe_req(self, dict):
-        if "instId" in dict:
-            instId = dict['instId']
+        if "channel" in dict:
+            if "instId" in dict:
+                instId = dict['instId']
+            else:
+                instId = dict['coin']
+            return SubscribeReq(dict['instType'], dict['channel'], instId)
         else:
-            instId = dict['coin']
-        return SubscribeReq(dict['instType'], dict['channel'], instId)
+            return SubscribeReqUta(dict['instType'], dict['topic'])
 
     def get_listener(self, json_obj):
         try:
@@ -280,7 +283,9 @@ class BitgetWsClient:
 
             subscribe_req = json.loads(arg, object_hook=self.__dict_to_subscribe_req)
 
-            if subscribe_req.channel != "books":
+            if "channel" in arg and subscribe_req.channel != "books":
+                return True
+            elif "topic" in arg and subscribe_req.topic != "books":
                 return True
 
             books_info = json.loads(data, object_hook=self.__dict_books_info)[0]
@@ -372,6 +377,19 @@ class SubscribeReq:
 
     def __hash__(self) -> int:
         return hash(self.inst_type + self.channel + self.inst_id)
+
+
+class SubscribeReqUta:
+
+    def __init__(self, inst_type, topic):
+        self.inst_type = inst_type
+        self.topic = topic
+
+    def __eq__(self, other) -> bool:
+        return self.__dict__ == other.__dict__
+
+    def __hash__(self) -> int:
+        return hash(self.inst_type + self.topic)
 
 
 class BaseWsReq:
